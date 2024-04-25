@@ -58,6 +58,10 @@ export class ExportExcelService {
       'garbage',
       `${fileName}.xlsx`,
     );
+    if (!fs.existsSync(exportPath)) {
+      fs.mkdirSync(path.dirname(exportPath), { recursive: true });
+      fs.writeFileSync(exportPath, '', 'utf8');
+    }
     const streamFile = fs.createWriteStream(exportPath);
     const keys = Object.keys(data[0]);
 
