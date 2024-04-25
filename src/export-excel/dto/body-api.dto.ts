@@ -10,7 +10,7 @@ export class BodyApiDto {
   @ApiProperty({ default: 1 })
   current: number;
 
-  @ApiProperty({ default: 2000 })
+  @ApiProperty({ default: 5000 })
   size: number;
 
   @ApiProperty({ default: 1 })
