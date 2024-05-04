@@ -27,29 +27,43 @@ export class ExportExcelController {
     required: true,
   })
   @ApiOperation({ summary: 'Download Excel file' })
-  @ApiResponse({ status: 200, description: 'Excel file downloaded.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Excel file downloaded.',
+    content: {
+      'application/zip': {
+        schema: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   async getExcelFile(
     @Query('authentication') auth: string,
-    @Body() bodyApi: BodyApiDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const fileName = uuidv4();
-    await this.excelService.exportExcel(auth, bodyApi, fileName);
-    const filePath = join(process.cwd(), 'garbage', `${fileName}.xlsx`);
-    const file = createReadStream(filePath);
+    const listFiles = await this.excelService.exportExcel(auth);
+    const filePath = join(process.cwd(), 'garbage');
+    const outputFile = join(process.cwd(), 'zipFolder', 'data.zip');
+    await this.excelService.zipDirectory(filePath, outputFile);
     res.set({
-      'Content-Type':
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': 'attachment; filename="Data.xlsx"',
+      'Content-Type': 'application/zip',
+      'Content-Disposition': `attachment; filename="data.zip"`,
     });
-
+    const file = createReadStream(outputFile);
     res.on('finish', () => {
-      unlink(filePath, (err) => {
+      listFiles.forEach((listFile) => {
+        unlink(listFile, (err) => {
+          if (err) console.error('Error deleting file:', err);
+          else console.log('File deleted successfully');
+        });
+      });
+      unlink(outputFile, (err) => {
         if (err) console.error('Error deleting file:', err);
-        else console.log('File deleted successfully');
+        else console.log('File zip deleted successfully');
       });
     });
-
     return new StreamableFile(file);
   }
 }
