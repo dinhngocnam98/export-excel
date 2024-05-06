@@ -108,8 +108,8 @@ export const apiInfos = [
     body: {
       current: 1,
       size: size,
-      startTime: now,
-      endTime: endNow,
+      startTime: startDay_1,
+      endTime: endDay_1,
       agentCode: '238001',
       takingAgentCode: '238001',
       detailType: '1',
@@ -123,8 +123,8 @@ export const apiInfos = [
     body: {
       current: 1,
       size: size,
-      startTime: now,
-      endTime: endNow,
+      startTime: startDay_1,
+      endTime: endDay_1,
       agentCode: '238001',
       signAgentCode: '238001',
       detailType: '1',

@@ -32,11 +32,15 @@ export class ExportExcelService {
       });
       const worksheet = workbook.addWorksheet('Data');
       const data = await this.getData(auth, apiInfo);
-      console.log(`Số lượng data: `, data.length);
-      await this.parseDataToExcel(data, worksheet);
-      await workbook.commit();
-      listFiles.push(exportPath);
-      console.log(`API ${apiInfo.name} hoàn thành`);
+      if (data != null) {
+        console.log(`Số lượng data: `, data.length);
+        await this.parseDataToExcel(data, worksheet);
+        await workbook.commit();
+        listFiles.push(exportPath);
+        console.log(`API ${apiInfo.name} hoàn thành`);
+      } else {
+        console.log(`API ${apiInfo.name} không có dữ liệu`);
+      }
     }
     // return excelDir;
     return listFiles;
@@ -59,6 +63,9 @@ export class ExportExcelService {
       let result = [];
       const response = await axios(options);
       const data = response.data.data;
+      if (!data || data === 'false' || data === null) {
+        return null;
+      }
       result = result.concat(data.records);
       const pages: number = data.pages;
       if (pages > 1) {
